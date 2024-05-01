@@ -6,9 +6,9 @@ use tokio::{net::TcpStream, sync::Mutex, task::JoinHandle};
 use tokio_tungstenite::{tungstenite::Message, MaybeTlsStream, WebSocketStream};
 use url::Url;
 
-use crate::structs::{
-    AuthPayload, ChannelsPayload, ChannelsResponse, OrderbookAEVO, OrderbookAEVOResponse,
-    OrderbookPayload,
+use super::aevo_structs::{
+    AuthPayloadAEVO, ChannelsPayloadAEVO, ChannelsResponseAEVO, OrderbookAEVO,
+    OrderbookAEVOResponse, OrderbookPayloadAEVO,
 };
 
 pub struct AEVOWSAuthenticator<'a> {
@@ -27,7 +27,7 @@ impl<'a> AEVOWSAuthenticator<'a> {
 
     fn generate_auth_message(&self) -> Message {
         let (api_key, secret) = self.generate_api_key();
-        Message::Text(serde_json::to_string(&AuthPayload::new(api_key, secret)).unwrap())
+        Message::Text(serde_json::to_string(&AuthPayloadAEVO::new(api_key, secret)).unwrap())
     }
 
     pub async fn authenticate(&self) -> Result<WebSocketStream<MaybeTlsStream<TcpStream>>> {
@@ -47,12 +47,16 @@ pub struct AEVOWSOrderbookFeed {
 }
 
 impl AEVOWSOrderbookFeed {
+    pub fn new(wss_socket_stream: WebSocketStream<MaybeTlsStream<TcpStream>>) -> Self {
+        Self { wss_socket_stream }
+    }
+
     fn generate_channels_message(&self) -> Message {
-        Message::Text(serde_json::to_string(&ChannelsPayload::new()).unwrap())
+        Message::Text(serde_json::to_string(&ChannelsPayloadAEVO::new()).unwrap())
     }
 
     fn generate_orderbook_message(&self, channels: Vec<String>) -> Message {
-        Message::Text(serde_json::to_string(&OrderbookPayload::new(channels)).unwrap())
+        Message::Text(serde_json::to_string(&OrderbookPayloadAEVO::new(channels)).unwrap())
     }
 
     async fn subscribe_for_feed(&mut self) -> Result<()> {
@@ -62,7 +66,7 @@ impl AEVOWSOrderbookFeed {
 
         let search_channel = if let Some(Ok(channels)) = self.wss_socket_stream.next().await {
             if let Message::Text(channels_text) = channels {
-                let channels_decoded: ChannelsResponse = serde_json::from_str(&channels_text)?;
+                let channels_decoded: ChannelsResponseAEVO = serde_json::from_str(&channels_text)?;
 
                 //ToDo: Correct channel parsing
                 channels_decoded

@@ -1,51 +1,38 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy)]
-///Enum describes on which DEX we have seen arbitrage oportunity
-pub enum TradeDirection {
-    Left {
-        left_price_delta: i64,
-        right_price_delta: u64,
-    },
-    Right {
-        left_price_delta: u64,
-        right_price_delta: i64,
-    },
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AuthData {
+pub struct AuthDataAEVO {
     key: String,
     secret: String,
 }
 
-impl AuthData {
+impl AuthDataAEVO {
     pub fn new(key: String, secret: String) -> Self {
         Self { key, secret }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AuthPayload {
+pub struct AuthPayloadAEVO {
     op: String,
-    data: AuthData,
+    data: AuthDataAEVO,
 }
 
-impl AuthPayload {
+impl AuthPayloadAEVO {
     pub fn new(key: String, secret: String) -> Self {
         Self {
             op: "auth".to_string(),
-            data: AuthData::new(key, secret),
+            data: AuthDataAEVO::new(key, secret),
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ChannelsPayload {
+pub struct ChannelsPayloadAEVO {
     op: String,
 }
 
-impl ChannelsPayload {
+impl ChannelsPayloadAEVO {
     pub fn new() -> Self {
         Self {
             op: "channels".to_string(),
@@ -54,12 +41,12 @@ impl ChannelsPayload {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OrderbookPayload {
+pub struct OrderbookPayloadAEVO {
     op: String,
     data: Vec<String>,
 }
 
-impl OrderbookPayload {
+impl OrderbookPayloadAEVO {
     pub fn new(channels: Vec<String>) -> Self {
         Self {
             op: "orderbook".to_string(),
@@ -69,7 +56,7 @@ impl OrderbookPayload {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ChannelsResponse {
+pub struct ChannelsResponseAEVO {
     pub data: Vec<String>,
 }
 
@@ -79,6 +66,7 @@ pub struct OrderbookAEVOData {
     instrument_type: String,
     bids: Vec<(String, String, String)>,
     asks: Vec<(String, String, String)>,
+    last_updated: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -87,7 +75,7 @@ pub struct OrderbookAEVOResponse {
     data: OrderbookAEVOData,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct OrderbookAEVO {
     pub bids: Vec<(String, String, String)>,
     pub asks: Vec<(String, String, String)>,
