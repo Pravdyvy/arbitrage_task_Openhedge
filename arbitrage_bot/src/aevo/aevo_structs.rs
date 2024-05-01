@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -75,23 +77,65 @@ pub struct OrderbookAEVOResponse {
     data: OrderbookAEVOData,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct OrderbookAEVO {
-    pub bids: Vec<(String, String, String)>,
-    pub asks: Vec<(String, String, String)>,
+    pub bids: BTreeMap<u64, (u64, u64, f64)>,
+    pub asks: BTreeMap<u64, (u64, u64, f64)>,
 }
 
 impl OrderbookAEVO {
     pub fn apply_changes(&mut self, resp: OrderbookAEVOResponse) {
         if resp.data.r#type == "snapshot" {
-            self.asks = resp.data.asks;
-            self.bids = resp.data.bids;
+            self.asks = resp
+                .data
+                .asks
+                .into_iter()
+                .map(|(price, amount, iv)| {
+                    (
+                        price.clone().parse().unwrap(),
+                        (
+                            price.parse().unwrap(),
+                            amount.parse().unwrap(),
+                            iv.parse().unwrap(),
+                        ),
+                    )
+                })
+                .collect();
+            self.bids = resp
+                .data
+                .bids
+                .into_iter()
+                .map(|(price, amount, iv)| {
+                    (
+                        price.clone().parse().unwrap(),
+                        (
+                            price.parse().unwrap(),
+                            amount.parse().unwrap(),
+                            iv.parse().unwrap(),
+                        ),
+                    )
+                })
+                .collect();
         } else {
-            for item in resp.data.asks {
-                self.asks.push(item);
+            for (price, amount, iv) in resp.data.asks {
+                self.asks.insert(
+                    price.clone().parse().unwrap(),
+                    (
+                        price.parse().unwrap(),
+                        amount.parse().unwrap(),
+                        iv.parse().unwrap(),
+                    ),
+                );
             }
-            for item in resp.data.bids {
-                self.bids.push(item);
+            for (price, amount, iv) in resp.data.bids {
+                self.bids.insert(
+                    price.clone().parse().unwrap(),
+                    (
+                        price.parse().unwrap(),
+                        amount.parse().unwrap(),
+                        iv.parse().unwrap(),
+                    ),
+                );
             }
         }
     }

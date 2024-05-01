@@ -9,7 +9,7 @@ use crate::{
         aevo_orderbook_feed::{AEVOWSAuthenticator, AEVOWSOrderbookFeed},
         aevo_structs::OrderbookAEVO,
     },
-    calculations::{check_orderbooks, estimate_swap},
+    calculations::check_orderbooks,
     dxdy::{
         dxdy_orderbook_feed::{DXDYWSAuthenticator, DXDYWSOrderbookFeed},
         dxdy_structs::OrderbookDXDY,
@@ -19,7 +19,6 @@ use crate::{
 pub mod aevo;
 pub mod calculations;
 pub mod dxdy;
-pub mod structs_general;
 
 pub async fn main_loop() -> Result<()> {
     env_logger::init();
@@ -27,7 +26,7 @@ pub async fn main_loop() -> Result<()> {
     info!("Starting main loop");
 
     let mut cumulative_p_l = 0;
-    let mut balance = 1000;
+    let balance = 1000;
 
     let orderbook_aevo = OrderbookAEVO::default();
     let orderbook_dxdy = OrderbookDXDY::default();
@@ -49,13 +48,20 @@ pub async fn main_loop() -> Result<()> {
 
     loop {
         //Search for arbitrage posibilities
-        let direction = check_orderbooks(orderbook_aevo_ref.clone(), orderbook_dxdy_ref.clone(), balance);
+        let (delta, sign) = check_orderbooks(
+            orderbook_aevo_ref.clone(),
+            orderbook_dxdy_ref.clone(),
+            balance,
+        ).await;
+
+        let mut p_l = 0;
 
         //If p&l is positive, initiate trading
-        let p_l = estimate_swap(direction, balance);
+        if sign > 0 {
+            p_l = delta;
+        }
         cumulative_p_l += p_l;
 
-        //update results in log format
         info!("Profit and loss after last trade : {p_l}");
         info!("Cumulative profit and loss : {cumulative_p_l}");
     }
