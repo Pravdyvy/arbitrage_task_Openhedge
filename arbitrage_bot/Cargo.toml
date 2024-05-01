@@ -3,6 +3,30 @@ name = "arbitrage_bot"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
+actix = "0.13.0"
+actix-rt = "2.8.0"
+anyhow = "1.0"
+chrono = "0.4.24"
+futures = "0.3"
+hex = "0.4.3"
+num_cpus = "1.13.1"
+serde_json = "1.0.81"
+env_logger = "0.10"
+log = "0.4"
+
+[dependencies.serde]
+features = ["derive"]
+version = "1.0.60"
+
+[dependencies.reqwest]
+features = ["json"]
+version = "0.11.16"
+
+[dependencies.tokio]
+features = ["net", "rt-multi-thread", "sync", "fs"]
+version = "1.28.2"
+
+[dependencies.tracing]
+features = ["std"]
+version = "0.1.13"
