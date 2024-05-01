@@ -52,7 +52,8 @@ pub async fn main_loop() -> Result<()> {
             orderbook_aevo_ref.clone(),
             orderbook_dxdy_ref.clone(),
             balance,
-        ).await;
+        )
+        .await;
 
         let mut p_l = 0;
 

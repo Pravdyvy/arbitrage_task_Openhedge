@@ -32,7 +32,7 @@ impl<'a> AEVOWSAuthenticator<'a> {
 
     pub async fn authenticate(&self) -> Result<WebSocketStream<MaybeTlsStream<TcpStream>>> {
         let (mut websocket, _) =
-            tokio_tungstenite::connect_async(Url::parse(&self.wss_addr)?).await?;
+            tokio_tungstenite::connect_async(Url::parse(self.wss_addr)?).await?;
 
         let auth_message = self.generate_auth_message();
 
@@ -52,7 +52,7 @@ impl AEVOWSOrderbookFeed {
     }
 
     fn generate_channels_message(&self) -> Message {
-        Message::Text(serde_json::to_string(&ChannelsPayloadAEVO::new()).unwrap())
+        Message::Text(serde_json::to_string(&ChannelsPayloadAEVO::default()).unwrap())
     }
 
     fn generate_orderbook_message(&self, channels: Vec<String>) -> Message {

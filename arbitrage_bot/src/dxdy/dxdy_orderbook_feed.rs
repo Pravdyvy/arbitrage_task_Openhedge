@@ -18,7 +18,7 @@ impl<'a> DXDYWSAuthenticator<'a> {
     }
 
     pub async fn authenticate(&self) -> Result<WebSocketStream<MaybeTlsStream<TcpStream>>> {
-        let (websocket, _) = tokio_tungstenite::connect_async(Url::parse(&self.wss_addr)?).await?;
+        let (websocket, _) = tokio_tungstenite::connect_async(Url::parse(self.wss_addr)?).await?;
 
         //No authorization requests detailed in docs
 
@@ -36,7 +36,7 @@ impl DXDYWSOrderbookFeed {
     }
 
     fn generate_orderbook_message(&self) -> Message {
-        Message::Text(serde_json::to_string(&OrderbookPayloadDXDY::new()).unwrap())
+        Message::Text(serde_json::to_string(&OrderbookPayloadDXDY::default()).unwrap())
     }
 
     async fn subscribe_for_feed(&mut self) -> Result<()> {

@@ -15,11 +15,11 @@ impl OrderbookAEVO {
         let mut curr_balacne = balance;
 
         for (price, (_, size, _)) in self.bids.iter().rev() {
-            if price*size <= curr_balacne {
+            if price * size <= curr_balacne {
                 asset_balance += size;
-                curr_balacne -= price*size;
+                curr_balacne -= price * size;
             } else {
-                asset_balance += curr_balacne/price;
+                asset_balance += curr_balacne / price;
                 curr_balacne = 0;
             }
 
@@ -40,10 +40,10 @@ impl OrderbookAEVO {
 
         for (price, (_, size, _)) in self.asks.iter() {
             if *size <= curr_asset_balacne {
-                balance += size*price;
+                balance += size * price;
                 curr_asset_balacne -= size;
             } else {
-                balance += curr_asset_balacne*price;
+                balance += curr_asset_balacne * price;
                 curr_asset_balacne = 0;
             }
 
@@ -65,11 +65,11 @@ impl OrderbookDXDY {
         let mut curr_balacne = balance;
 
         for (price, (_, size)) in self.bids.iter().rev() {
-            if price*size <= curr_balacne {
+            if price * size <= curr_balacne {
                 asset_balance += size;
-                curr_balacne -= price*size;
+                curr_balacne -= price * size;
             } else {
-                asset_balance += curr_balacne/price;
+                asset_balance += curr_balacne / price;
                 curr_balacne = 0;
             }
 
@@ -90,10 +90,10 @@ impl OrderbookDXDY {
 
         for (price, (_, size)) in self.asks.iter() {
             if *size <= curr_asset_balacne {
-                balance += size*price;
+                balance += size * price;
                 curr_asset_balacne -= size;
             } else {
-                balance += curr_asset_balacne*price;
+                balance += curr_asset_balacne * price;
                 curr_asset_balacne = 0;
             }
 
@@ -117,9 +117,11 @@ pub async fn check_orderbooks(
         let orderbook_aevo = orderbook_aevo.lock().await;
         let orderbook_dxdy = orderbook_dxdy.lock().await;
         //Buy asset on AEVO sell on dXdY
-        let left_buy_right_sell = orderbook_dxdy.sell_as_much_as_possible(orderbook_aevo.buy_as_much_as_possible(balance));
+        let left_buy_right_sell = orderbook_dxdy
+            .sell_as_much_as_possible(orderbook_aevo.buy_as_much_as_possible(balance));
         //Buy asset on dXdY sell on AEVO
-        let right_buy_left_sell = orderbook_aevo.sell_as_much_as_possible(orderbook_dxdy.buy_as_much_as_possible(balance));
+        let right_buy_left_sell = orderbook_aevo
+            .sell_as_much_as_possible(orderbook_dxdy.buy_as_much_as_possible(balance));
 
         let left_right_delta;
         let is_left_right_profitable;
@@ -144,7 +146,7 @@ pub async fn check_orderbooks(
 
         match (is_left_right_profitable, is_right_left_profitable) {
             (false, false) => (cmp::min(left_right_delta, right_left_delta), -1),
-            (true, true) => (cmp::max(left_right_delta, right_left_delta) , 1),
+            (true, true) => (cmp::max(left_right_delta, right_left_delta), 1),
             (true, false) => (left_right_delta, 1),
             (false, true) => (right_left_delta, 1),
         }

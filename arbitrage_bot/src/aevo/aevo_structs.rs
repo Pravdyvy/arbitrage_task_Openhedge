@@ -34,8 +34,8 @@ pub struct ChannelsPayloadAEVO {
     op: String,
 }
 
-impl ChannelsPayloadAEVO {
-    pub fn new() -> Self {
+impl Default for ChannelsPayloadAEVO {
+    fn default() -> Self {
         Self {
             op: "channels".to_string(),
         }

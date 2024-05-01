@@ -9,8 +9,8 @@ pub struct OrderbookPayloadDXDY {
     id: String,
 }
 
-impl OrderbookPayloadDXDY {
-    pub fn new() -> Self {
+impl Default for OrderbookPayloadDXDY {
+    fn default() -> Self {
         Self {
             r#type: "subscribe".to_string(),
             channel: "v4_orderbook".to_string(),
