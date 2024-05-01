@@ -10,6 +10,6 @@ pub fn check_orderbooks() -> TradeDirection {
     todo!()
 }
 
-pub async fn update_orderbooks() -> Result<()>{
+pub async fn update_orderbooks() -> Result<()> {
     todo!()
 }

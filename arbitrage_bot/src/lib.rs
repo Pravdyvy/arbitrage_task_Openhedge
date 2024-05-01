@@ -3,8 +3,10 @@ use log::info;
 
 use crate::calculations::{check_orderbooks, estimate_swap, update_orderbooks};
 
-pub mod structs;
+pub mod aevo_client;
 pub mod calculations;
+pub mod dxdy_client;
+pub mod structs;
 
 pub async fn main_loop() -> Result<()> {
     env_logger::init();
