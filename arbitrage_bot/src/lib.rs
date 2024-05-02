@@ -47,6 +47,9 @@ pub async fn main_loop() -> Result<()> {
     dxdy_feeder.spawn_feed(orderbook_dxdy_ref.clone()).await?;
 
     loop {
+        //Timeout between orderbook checkups
+        tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+
         //Search for arbitrage posibilities
         let (delta, sign) = check_orderbooks(
             orderbook_aevo_ref.clone(),
