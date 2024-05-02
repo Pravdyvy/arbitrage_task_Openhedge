@@ -38,6 +38,9 @@ pub struct OrderbookDXDYResponse {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
+/// dXdY Orderbook struct
+/// 
+/// Storing BTreeMaps to make insert operations fast 
 pub struct OrderbookDXDY {
     pub bids: BTreeMap<u64, (u64, u64)>,
     pub asks: BTreeMap<u64, (u64, u64)>,

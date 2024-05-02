@@ -78,6 +78,9 @@ pub struct OrderbookAEVOResponse {
 }
 
 #[derive(Debug, Clone, Default)]
+/// AEVO Orderbook struct
+/// 
+/// Storing BTreeMaps to make insert operations fast 
 pub struct OrderbookAEVO {
     pub bids: BTreeMap<u64, (u64, u64, f64)>,
     pub asks: BTreeMap<u64, (u64, u64, f64)>,

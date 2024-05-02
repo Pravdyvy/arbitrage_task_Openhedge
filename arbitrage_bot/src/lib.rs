@@ -31,18 +31,22 @@ pub async fn main_loop() -> Result<()> {
     let orderbook_aevo = OrderbookAEVO::default();
     let orderbook_dxdy = OrderbookDXDY::default();
 
+    //Sharing orderbooks between threads
     let orderbook_aevo_ref = Arc::new(Mutex::new(orderbook_aevo));
     let orderbook_dxdy_ref = Arc::new(Mutex::new(orderbook_dxdy));
 
     let aevo_auth = AEVOWSAuthenticator::new("wss://ws.aevo.xyz");
     let dxdy_auth = DXDYWSAuthenticator::new("wss://indexer.dydx.trade/v4/ws");
 
+    //Authentication
     let aevo_channel = aevo_auth.authenticate().await?;
     let dxdy_channel = dxdy_auth.authenticate().await?;
 
     let aevo_feeder = AEVOWSOrderbookFeed::new(aevo_channel);
     let dxdy_feeder = DXDYWSOrderbookFeed::new(dxdy_channel);
 
+    //Spawning feed tasks
+    //They update orderbooks in real time
     aevo_feeder.spawn_feed(orderbook_aevo_ref.clone()).await?;
     dxdy_feeder.spawn_feed(orderbook_dxdy_ref.clone()).await?;
 

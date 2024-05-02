@@ -114,6 +114,7 @@ pub async fn check_orderbooks(
     //For simplicity sake let`s assume, that we want to have only USDC after operation
     //There is 2 possible variants
     {
+        //Locking orderbooks
         let orderbook_aevo = orderbook_aevo.lock().await;
         let orderbook_dxdy = orderbook_dxdy.lock().await;
         //Buy asset on AEVO sell on dXdY
